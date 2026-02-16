@@ -1,0 +1,51 @@
+<!-- /public/auth.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>Daina · 로그인</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/images/daina.png" />
+  <link rel="apple-touch-icon" href="./assets/images/daina.png" />
+  <link rel="stylesheet" href="./assets/css/app.css" />
+  <script defer src="./assets/js/partials.js"></script>
+  <script type="module" defer src="./assets/js/main.js"></script>
+  <script type="module" defer src="./assets/js/authPage.js"></script>
+</head>
+<body>
+  <div class="page">
+    <div id="site-header"></div>
+
+    <main class="main-wrap">
+      <section class="card" style="max-width:720px;margin:22px auto;">
+        <h1 style="margin:0 0 6px;">구글 로그인</h1>
+        <p class="muted" style="margin:0 0 14px;">
+          팝업 차단/도메인 문제를 피하기 위해, 이 페이지는 redirect 방식으로 로그인합니다.
+        </p>
+
+        <div class="card" id="openBrowserWrap" style="display:none;margin:0 0 14px;">
+          <div style="font-weight:700;margin-bottom:6px;">모바일에서 로그인이 막힐 때</div>
+          <div class="muted" style="margin-bottom:10px;">
+            현재 앱 내 브라우저(WebView)로 열려 있으면 구글 정책상 로그인이 차단될 수 있습니다.
+            아래 버튼으로 외부 브라우저(Chrome/Safari)에서 다시 열어주세요.
+          </div>
+          <button class="btn" id="btnOpenBrowser" type="button">외부 브라우저로 열기</button>
+        </div>
+
+        <div class="row" style="gap:10px;flex-wrap:wrap;">
+          <button class="btn" id="btnDoLogin" type="button">로그인 시작</button>
+          <button class="btn ghost" id="btnBack" type="button">이전 페이지로</button>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <div class="muted" style="margin-bottom:6px;">상태</div>
+          <pre id="authDebug" style="white-space:pre-wrap;margin:0;">로딩...</pre>
+        </div>
+      </section>
+    </main>
+
+    <div id="site-footer"></div>
+  </div>
+</body>
+</html>

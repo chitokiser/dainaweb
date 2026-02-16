@@ -1,0 +1,54 @@
+<!-- /public/partials/header.html -->
+<header class="top-header" id="siteHeaderRoot">
+  <div class="hdr-inner">
+    <a class="brand" href="index.html">
+      <img class="brand-logo" src="assets/images/daina.png" alt="Daina" />
+      <span class="brand-name">Daina</span>
+    </a>
+
+    <!-- NOTE: Do not add the generic 'nav' class here.
+         app.css also defines a later .nav{display:flex} rule which overrides
+         the mobile breakpoint hiding (.desktop-nav{display:none}) and causes
+         the desktop menu + hamburger menu to show together on mobile.
+         Keep only 'desktop-nav' and control visibility via media query. -->
+    <nav class="desktop-nav" aria-label="primary">
+      <a href="jobs.html">구인</a>
+      <a href="jobseekers.html">구직</a>
+      <a href="used.html">중고거래</a>
+      <a href="realestate.html">부동산임대</a>
+      <a href="shops.html">상점</a>
+      <a href="stay.html">숙박</a>
+      <a href="play.html">놀거리</a>
+      <a href="biz.html">사업아이템</a>
+      <a href="mypage.html" id="navMy" style="display:none;">마이페이지</a>
+      <a href="admin.html" id="navAdmin" style="display:none;">관리자</a>
+    </nav>
+
+    <div class="hdr-right">
+      <select class="lang-sel" id="langSel" aria-label="language">
+        <option value="ko">KR</option>
+        <option value="vi">VI</option>
+      </select>
+      <span class="auth-state" id="authState">로그인 필요</span>
+      <button class="btn" id="btnLogin" type="button">구글로그인</button>
+      <button class="btn ghost" id="btnLogout" type="button" style="display:none;">로그아웃</button>
+
+      <button class="hamburger" id="btnHamburger" type="button" aria-label="open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mnav" id="mobileNav" aria-label="mobile menu">
+    <a href="jobs.html">구인</a>
+    <a href="jobseekers.html">구직</a>
+    <a href="used.html">중고거래</a>
+    <a href="realestate.html">부동산임대</a>
+    <a href="shops.html">상점</a>
+    <a href="stay.html">숙박</a>
+    <a href="play.html">놀거리</a>
+    <a href="biz.html">사업아이템</a>
+    <a href="mypage.html" id="navMyM" style="display:none;">마이페이지</a>
+    <a href="admin.html" id="navAdminM" style="display:none;">관리자</a>
+  </div>
+</header>

@@ -1,0 +1,22 @@
+// /storage.rules
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/(default)/documents/admins/$(request.auth.uid))
+        && get(/databases/(default)/documents/admins/$(request.auth.uid)).data.enabled == true;
+    }
+
+    // posts images: allow write only for signed in users, limit size, allow read for all
+    match /posts/{postId}/{fileName} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow update, delete: if isAdmin();
+    }
+  }
+}

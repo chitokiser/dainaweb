@@ -1,0 +1,15 @@
+{
+  "name": "daina_portal_integrated_v18",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase-admin": "^13.6.1"
+  }
+}

@@ -1,0 +1,132 @@
+<!-- /public/post.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>Daina · 글 등록</title>
+
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/images/dainalogo64x64.png" />
+  <link rel="apple-touch-icon" href="./assets/images/dainalogo64x64.png" />
+
+  <link rel="stylesheet" href="./assets/css/app.css" />
+  <script defer src="./assets/js/partials.js"></script>
+  <script type="module" defer src="./assets/js/main.js"></script>
+  <script type="module" defer src="./assets/js/postPage.js"></script>
+
+  <style>
+    /* /public/post.html inline */
+    .form-wrap{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      box-shadow: var(--shadow);
+      padding:16px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    .field{ display:flex; flex-direction:column; gap:6px; }
+    .label{ font-size:13px; color:var(--muted); }
+    input, select, textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:14px;
+      outline:none;
+      background:#fff;
+    }
+    textarea{ min-height:140px; resize:vertical; }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px; }
+    .hint{ font-size:12px; color:var(--muted); line-height:1.5; margin-top:8px; }
+    .status{
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid var(--line);
+      background:#fff;
+      padding:8px 10px;
+      border-radius:12px;
+    }
+    @media (max-width: 720px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div id="site-header"></div>
+
+    <main class="main">
+      <section class="section">
+        <div class="section-head">
+          <h2 class="section-title">글 등록</h2>
+          <a class="section-more" href="./index.html">홈으로</a>
+        </div>
+
+        <div class="form-wrap">
+          <div class="grid">
+            <div class="field">
+              <div class="label">카테고리</div>
+              <select id="category">
+                <option value="jobs">구인</option>
+                <option value="jobseekers">구직</option>
+                <option value="used">중고거래</option>
+                <option value="stay">한달살기</option>
+                <option value="share">공유경제</option>
+                <option value="shops">가맹점</option>
+                <option value="events">이벤트</option>
+                <option value="closedmall">패쇄몰</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <div class="label">지역/동네</div>
+              <input id="area" placeholder="예: 하노이, 미딩, 떠이호..." />
+            </div>
+
+            <div class="field">
+              <div class="label">제목</div>
+              <input id="title" placeholder="한 줄 제목" />
+            </div>
+
+            <div class="field">
+              <div class="label">태그(선택)</div>
+              <input id="tag" placeholder="예: 급구, 단기, 오션파크2, 키즈..." />
+            </div>
+
+            <div class="field" style="grid-column:1/-1;">
+              <div class="label">설명</div>
+              <textarea id="desc" placeholder="내용을 자세히 적어주세요. 연락 방법/조건/시간 등"></textarea>
+            </div>
+
+            <div class="field" style="grid-column:1/-1;">
+              <div class="label">연락처(선택)</div>
+              <input id="contact" placeholder="예: 카톡ID, 전화번호, 텔레그램, 이메일 등" />
+            </div>
+
+            <div class="field" style="grid-column:1/-1;">
+              <div class="label">외부 링크(선택)</div>
+              <input id="href" placeholder="예: https://..." />
+            </div>
+          </div>
+
+          <div class="row">
+            <button class="btn primary" id="btnSubmit" type="button">등록 요청</button>
+            <span class="status" id="statusBox">로그인이 필요합니다.</span>
+          </div>
+
+          <div class="hint">
+            등록된 글은 pending 상태로 저장되며, 관리자 승인(approved) 후에 홈/목록에 노출됩니다.
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="site-footer"></div>
+  </div>
+</body>
+</html>

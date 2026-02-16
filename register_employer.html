@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>Daina · 구인자 프로필</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/images/daina.png" />
+  <link rel="apple-touch-icon" href="./assets/images/daina.png" />
+  <link rel="stylesheet" href="./assets/css/app.css" />
+  <script defer src="./assets/js/partials.js"></script>
+  <script type="module" defer src="./assets/js/main.js"></script>
+  <script type="module" defer src="./assets/js/employerFormPage.js"></script>
+</head>
+<body>
+  <div class="page">
+    <div id="site-header"></div>
+    <main class="main">
+      <div class="container">
+
+        <div class="card pad">
+          <div class="kv">
+            <div>
+              <h1 class="h1">구인자 프로필</h1>
+              <div class="sub">회사 기본 정보를 저장합니다. 공고 등록에 사용됩니다.</div>
+            </div>
+            <div class="actions">
+              <a class="btn primary" href="./post_job.html">공고 등록</a>
+              <a class="btn" href="./mypage.html">마이페이지</a>
+            </div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div id="authWarn" class="card pad" style="display:none; border-radius:16px;">
+            <div class="muted">로그인이 필요합니다. 상단에서 구글 로그인을 해주세요.</div>
+          </div>
+
+          <form id="form" style="margin-top:12px;">
+            <div class="grid">
+              <div class="g6">
+                <label>구인담당자 ID</label>
+                <input id="managerId" class="input" placeholder="예: vn_tech_0001" />
+              </div>
+              <div class="g6">
+                <label>회사명</label>
+                <input id="companyName" class="input" placeholder="회사 이름 입력" />
+              </div>
+
+              <div class="g6">
+                <label>연락처</label>
+                <input id="phone" class="input" placeholder="예: 010-0000-0000" />
+              </div>
+              <div class="g6">
+                <label>이메일</label>
+                <input id="email" class="input" placeholder="example@email.com" />
+              </div>
+
+              <div class="g12">
+                <label>SNS (Zalo/카카오톡/텔레그램)</label>
+                <input id="sns" class="input" placeholder="예: zalo: abc123" />
+              </div>
+
+              <div class="g12">
+                <label>회사 소개</label>
+                <textarea id="about" class="input" placeholder="간단 회사 소개"></textarea>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn primary" id="btnSave" type="submit">저장</button>
+              <button class="btn" id="btnLoad" type="button">내 정보 불러오기</button>
+            </div>
+            <div id="msg" class="sub" style="margin-top:8px;"></div>
+          </form>
+        </div>
+
+      </div>
+    </main>
+    <div id="site-footer"></div>
+  </div>
+</body>
+</html>

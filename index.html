@@ -1,0 +1,64 @@
+<!-- /public/index.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>Daina · 홈</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/images/daina.png" />
+  <link rel="apple-touch-icon" href="./assets/images/daina.png" />
+  <link rel="stylesheet" href="./assets/css/app.css" />
+  <script defer src="./assets/js/partials.js"></script>
+  <script type="module" defer src="./assets/js/main.js"></script>
+  <script type="module" defer src="./assets/js/indexPage.js"></script>
+</head>
+<body>
+  <div class="page">
+    <div id="site-header"></div>
+
+    <main class="main-wrap">
+      <section class="hero">
+        <div class="hero-inner">
+          <div>
+            <h1>베트남 하노이 생활 동반자 Daina</h1>
+            <p class="desc">카테고리 선택 → 글등록 → 관리자 승인 → 카테고리 전시 → 좋아요/댓글</p>
+          </div>
+          <div class="hero-card">
+            <div class="hero-card-title">오늘의 추천</div>
+            <div class="hero-card-desc">좋아요 기준 Top 10을 카테고리별로 보여줍니다.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec">
+        <div class="sec-head">
+          <h2 class="sec-title">공지사항</h2>
+        </div>
+        <div id="notices"></div>
+      </section>
+
+
+      <section class="sec">
+        <div class="sec-head" style="align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <h2 class="sec-title">카테고리 Top 10</h2>
+          <div class="tabs" id="topModeTabs">
+            <button class="tab active" type="button" data-mode="all">전체 Top</button>
+            <button class="tab" type="button" data-mode="week">주간 Top</button>
+          </div>
+        </div>
+        <div class="muted" style="margin-top:6px;">주간 Top은 최근 7일 활동 글 기준</div>
+      </section>
+
+      <div id="top10Wrap"></div>
+    </main>
+
+    <div id="site-footer"></div>
+  </div>
+
+  <div class="modal-wrap" id="modalWrap">
+    <div class="modal" id="modalBox"></div>
+  </div>
+  <div class="toast" id="toastRoot"></div>
+</body>
+</html>

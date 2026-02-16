@@ -1,0 +1,188 @@
+<!-- /public/admin.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>Daina · 관리자</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/images/daina.png" />
+  <link rel="apple-touch-icon" href="./assets/images/daina.png" />
+  <link rel="stylesheet" href="./assets/css/app.css" />
+  <script defer src="./assets/js/partials.js"></script>
+  <script type="module" defer src="./assets/js/main.js"></script>
+  <script type="module" defer src="./assets/js/adminPage.js"></script>
+</head>
+<body>
+  <div class="page">
+    <div id="site-header"></div>
+
+    <main class="main-wrap">
+      <section class="hero">
+        <div class="hero-inner">
+          <div>
+            <h1>관리자</h1>
+            <p class="desc">pending 승인/반려/숨김 및 수정 반영</p>
+          </div>
+          <div class="hero-card">
+            <div class="hero-card-title">권한</div>
+            <div class="hero-card-desc">Firestore admins/{uid}.enabled=true</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="notice" id="gate">
+        <div class="notice-title">권한 확인 중...</div>
+        <div class="notice-body">로그인 및 관리자 권한이 필요합니다.</div>
+</div>
+
+
+      
+      
+      <section class="card" id="subAdminPane" style="margin:16px 0 10px;display:none;">
+        <div class="card-hd" style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+          <div>
+            <div class="card-title">서브 관리자 지정</div>
+            <div class="muted" style="margin-top:4px;">이메일을 입력하면 해당 계정이 로그인 후 자동으로 관리자 권한을 획득합니다.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input class="input" id="subAdminEmail" placeholder="sub admin email (예: someone@gmail.com)" style="width:320px;max-width:80vw;" />
+            <button class="btn" type="button" id="btnAddSubAdmin">추가</button>
+          </div>
+        </div>
+        <div class="muted" id="subAdminMsg" style="margin-top:10px;"></div>
+      </section>
+
+
+<div class="tabs" id="adminTabs" style="margin:16px 0 10px;">
+        <button class="tab active" type="button" data-tab="posts">글 관리</button>
+        <button class="tab" type="button" data-tab="reports">신고 관리</button>
+      </div>
+
+      <section class="admin-grid" id="postsPane">
+        <div>
+          <div class="toolbar">
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <select class="select small" id="adminCat"></select>
+              <select class="select small" id="adminStatus"></select>
+              <input class="input" id="adminSearch" placeholder="검색 (제목/내용/지역/이메일)" style="width:260px;" />
+              <button class="btn ghost" id="btnReload" type="button">새로고침</button>
+            </div>
+          </div>
+
+          <div class="admin-list" id="adminList"></div>
+        </div>
+
+        <div class="form-card hide" id="editor">
+          <div class="muted">선택된 글</div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px;">
+            <span class="pill" id="edStatus">-</span>
+            <span class="muted">작성자: <span id="edOwner"></span></span>
+          </div>
+          <div class="muted" style="margin-top:6px;">ID: <span id="edId"></span></div>
+
+          <div class="form-grid" style="margin-top:12px;">
+            <div class="field">
+              <label class="label">카테고리</label>
+              <select class="select" id="edCategory"></select>
+            </div>
+            <div class="field">
+              <label class="label">지역</label>
+              <input class="input" id="edArea" />
+            </div>
+            <div class="field full">
+              <label class="label">제목</label>
+              <input class="input" id="edTitle" />
+            </div>
+            <div class="field">
+              <label class="label">태그</label>
+              <input class="input" id="edTag" />
+            </div>
+            <div class="field">
+              <label class="label">연락처</label>
+              <input class="input" id="edContact" />
+            </div>
+            <div class="field full">
+              <label class="label">설명</label>
+              <textarea class="textarea" id="edDesc"></textarea>
+            </div>
+            <div class="field full">
+              <label class="label">반려 사유</label>
+              <input class="input" id="edReason" placeholder="반려 시 필수" />
+            </div>
+            <div class="field full">
+              <label class="label">이미지</label>
+              <div id="edImgs" class="thumbs"></div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;">
+            <button class="btn ok" id="btnApprove" type="button">승인</button>
+            <button class="btn danger" id="btnReject" type="button">반려</button>
+            <button class="btn danger" id="btnHide" type="button">숨김</button>
+            <button class="btn danger" id="btnClose" type="button">마감</button>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="admin-grid hide" id="reportsPane">
+        <div>
+          <div class="toolbar">
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <select class="select small" id="repStatus">
+                <option value="open">open</option>
+                <option value="resolved">resolved</option>
+                <option value="dismissed">dismissed</option>
+              </select>
+              <input class="input" id="repSearch" placeholder="검색 (사유/이메일/글ID)" style="width:260px;" />
+              <button class="btn ghost" id="btnRepReload" type="button">새로고침</button>
+            </div>
+          </div>
+
+          <div class="admin-list" id="repList"></div>
+        </div>
+
+        <div class="form-card hide" id="repEditor">
+          <div class="muted">선택된 신고</div>
+          <div class="muted" style="margin-top:6px;">ID: <span id="repId"></span></div>
+
+          <div class="form-grid" style="margin-top:12px;">
+            <div class="field">
+              <label class="label">상태</label>
+              <span class="pill" id="repStatusPill">-</span>
+            </div>
+            <div class="field">
+              <label class="label">타겟</label>
+              <div class="muted" id="repTarget">-</div>
+            </div>
+            <div class="field full">
+              <label class="label">사유</label>
+              <input class="input" id="repReason" />
+            </div>
+            <div class="field full">
+              <label class="label">신고자</label>
+              <div class="muted" id="repReporter">-</div>
+            </div>
+            <div class="field full">
+              <label class="label">관리자 메모</label>
+              <input class="input" id="repAdminNote" placeholder="처리 내용" />
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px;">
+            <button class="btn ok" id="btnRepResolve" type="button">처리완료</button>
+            <button class="btn danger" id="btnRepDismiss" type="button">기각</button>
+            <button class="btn danger" id="btnRepHidePost" type="button">글 숨김</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <div id="site-footer"></div>
+  </div>
+
+  <div class="toast" id="toastRoot"></div>
+</body>
+</html>

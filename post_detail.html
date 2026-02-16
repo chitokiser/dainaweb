@@ -1,0 +1,75 @@
+<!-- /public/post_detail.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>Daina · 글 상세</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/images/daina.png" />
+  <link rel="apple-touch-icon" href="./assets/images/daina.png" />
+  <link rel="stylesheet" href="./assets/css/app.css" />
+  <script defer src="./assets/js/partials.js"></script>
+  <script type="module" defer src="./assets/js/main.js"></script>
+  <script type="module" defer src="./assets/js/postDetailPage.js"></script>
+</head>
+<body>
+  <div class="page">
+    <div id="site-header"></div>
+
+    <main class="main-wrap" id="root">
+      <section class="form-card">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between;">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <span class="pill st-approved" id="catChip">카테고리</span>
+            <button class="btn ghost" id="btnBack" type="button">뒤로</button>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <button class="btn ghost" id="btnBookmark" type="button">찜</button>
+            <button class="btn ghost" id="btnReport" type="button">신고</button>
+            <button class="btn" id="btnLike" type="button">좋아요 0</button>
+          </div>
+        </div>
+
+        <h1 id="title" style="margin-top:12px;margin-bottom:6px;"></h1>
+        <div class="muted" id="meta"></div>
+
+        <div id="loginTip" class="notice" style="margin-top:12px;">
+          <div class="notice-title">로그인이 필요합니다</div>
+          <div class="notice-body">좋아요/댓글/찜/신고는 구글로그인 후 가능합니다.</div>
+        </div>
+
+        <div id="galleryBox" style="margin-top:14px;"></div>
+
+        <div id="extraBox"></div>
+        <div id="linksBox" style="margin-top:10px;"></div>
+        <div id="contactBox" style="margin-top:10px;"></div>
+
+        <div class="kv" style="margin-top:12px;">
+          <div class="row" style="grid-template-columns: 1fr;">
+            <div class="v" id="desc"></div>
+          </div>
+        </div>
+
+        <div class="sec" style="margin-top:14px;">
+          <div class="sec-head">
+            <h2 class="sec-title">댓글</h2>
+          </div>
+
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;">
+            <input class="input" id="commentText" placeholder="댓글을 입력하세요" />
+            <button class="btn" id="btnComment" type="button">등록</button>
+          </div>
+
+          <div id="comments" style="margin-top:12px;"></div>
+        </div>
+      </section>
+    </main>
+
+    <div id="site-footer"></div>
+  </div>
+
+  <div class="toast" id="toastRoot"></div>
+</body>
+</html>

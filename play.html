@@ -1,0 +1,180 @@
+<!-- /public/play.html -->
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>Daina · 놀거리</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/images/daina.png" />
+  <link rel="apple-touch-icon" href="./assets/images/daina.png" />
+  <link rel="stylesheet" href="./assets/css/app.css" />
+  <script defer src="./assets/js/partials.js"></script>
+  <script type="module" defer src="./assets/js/main.js"></script>
+  <script type="module" defer src="./assets/js/categoryPage.js"></script>
+</head>
+<body data-category="play">
+  <div class="page">
+    <div id="site-header"></div>
+
+    <main class="main-wrap">
+      <section class="hero">
+        <div class="hero-inner">
+          <div>
+            <h1 id="pageTitle">놀거리</h1>
+            <p class="desc" id="pageSub"></p>
+          </div>
+          <div class="hero-card">
+            <div class="hero-card-title">카테고리 전시 흐름</div>
+            <div class="hero-card-desc">카테고리 선택 → 글등록 → 관리자 승인 → 전시 → 좋아요/댓글</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-card">
+        <div class="fold" id="postFold">
+          <div class="fold-head">
+            <h2 class="fold-title">글등록</h2>
+            <button class="btn ghost" id="btnFold" type="button">글등록 접기</button>
+          </div>
+
+          <div class="fold-body">
+            <div id="editBanner" class="notice hide">
+              <div class="notice-title">편집 모드</div>
+              <div class="notice-body" id="editBannerText"></div>
+              <div style="margin-top:10px;">
+                <button class="btn ghost" id="btnCancelEdit" type="button">편집 취소</button>
+              </div>
+            </div>
+
+            <div id="loginTip" class="notice">
+              <div class="notice-title">로그인이 필요합니다</div>
+              <div class="notice-body">글등록/좋아요/댓글은 구글로그인 후 가능합니다.</div>
+            </div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label class="label">카테고리</label>
+                <select class="select" id="categorySel"></select>
+              </div>
+
+              <div class="field">
+                <label class="label">지역</label>
+                <input class="input" id="area" placeholder="예: 하노이, 미딩, 빈홈..." />
+              </div>
+
+              <div class="field">
+                <label class="label">태그</label>
+                <input class="input" id="tag" placeholder="예: 카페, 공구, 한국마트..." />
+              </div>
+
+              <div class="field full">
+                <label class="label">제목</label>
+                <input class="input" id="title" placeholder="제목" />
+              </div>
+
+              <div class="field full">
+                <label class="label">설명</label>
+                <textarea class="textarea" id="desc" placeholder="상세 내용을 입력하세요"></textarea>
+              </div>
+
+              <div class="field">
+                <label class="label">연락처</label>
+                <input class="input" id="contact" placeholder="카톡ID, 전화번호, 텔레그램 등" />
+              </div>
+
+              <div class="field">
+                <label class="label">연락처 공개</label>
+                <label style="display:flex;align-items:center;gap:10px;height:42px;">
+                  <input type="checkbox" id="contactPublic" checked />
+                  <span class="muted">카드/상세에서 표시</span>
+                </label>
+              </div>
+
+              <div class="field full" id="linkFields">
+                <div class="form-grid">
+                  <div class="field">
+                    <label class="label">지도 링크 (허용 도메인만)</label>
+                    <input class="input" id="mapLink" placeholder="https://maps.google.com/..." />
+                  </div>
+                  <div class="field">
+                    <label class="label">오픈채팅 링크 (허용 도메인만)</label>
+                    <input class="input" id="chatLink" placeholder="https://open.kakao.com/..." />
+                  </div>
+                </div>
+                <div class="helper" style="margin-top:6px;">
+                  본문에 외부 URL은 금지, 링크는 위 필드로만 허용합니다. (허용 도메인 외 자동 제거)
+                </div>
+              </div>
+
+              <div class="field full" data-extra-box style="display:none;"></div>
+
+              <div class="field full">
+                <label class="label">대표 이미지 URL (필수)</label>
+                <input class="input img-url" id="img0" type="url" placeholder="https://..." required />
+                <div class="helper">외부 이미지 URL만 허용합니다. 첫 번째 URL이 대표 이미지입니다.</div>
+              </div>
+
+              <div class="field full">
+                <label class="label">추가 이미지 URL (최대 9개)</label>
+                <div class="grid" style="grid-template-columns:1fr;gap:8px;">
+                  <input class="input img-url" id="img1" type="url" placeholder="https://..." />
+                  <input class="input img-url" id="img2" type="url" placeholder="https://..." />
+                  <input class="input img-url" id="img3" type="url" placeholder="https://..." />
+                  <input class="input img-url" id="img4" type="url" placeholder="https://..." />
+                  <input class="input img-url" id="img5" type="url" placeholder="https://..." />
+                  <input class="input img-url" id="img6" type="url" placeholder="https://..." />
+                  <input class="input img-url" id="img7" type="url" placeholder="https://..." />
+                  <input class="input img-url" id="img8" type="url" placeholder="https://..." />
+                  <input class="input img-url" id="img9" type="url" placeholder="https://..." />
+                </div>
+              </div>
+
+              <div class="field full" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                <button class="btn" id="btnSubmit" type="button" disabled>등록 요청</button>
+                <span class="helper">등록 후 상태는 pending이며, 관리자 승인 후 노출됩니다.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="toolbar">
+        <div class="tabs">
+          <button class="tab active" id="tabPublic" type="button">전체글</button>
+          <button class="tab" id="tabMine" type="button">내 글</button>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <select class="select small" id="sortSel">
+            <option value="new">최신</option>
+            <option value="popular">좋아요</option>
+            <option value="comments">댓글</option>
+          </select>
+
+          <div id="mineFilters" class="hide">
+            <select class="select small" id="mineStatusSel">
+              <option value="all">전체</option>
+              <option value="pending">pending</option>
+              <option value="approved">approved</option>
+              <option value="rejected">rejected</option>
+              <option value="hidden">hidden</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="cards-list" id="cards"></div>
+      </section>
+    </main>
+
+    <div id="site-footer"></div>
+  </div>
+
+  <div class="modal-wrap" id="modalWrap">
+    <div class="modal" id="modalBox"></div>
+  </div>
+  <div class="toast" id="toastRoot"></div>
+</body>
+</html>

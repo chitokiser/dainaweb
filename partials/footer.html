@@ -1,0 +1,30 @@
+<!-- /public/partials/footer.html -->
+<footer class="footer-wrap">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-left">
+        <img class="footer-logo" src="assets/images/daina.png" alt="Daina" />
+        <div>
+          <div class="footer-brand">Daina</div>
+          <div class="footer-desc">베트남 하노이 생활 동반자</div>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <a href="index.html">플랫폼소개</a>
+        <a href="index.html#top10Wrap">주요정보</a>
+        <a href="#" id="btnContact">광고문의</a>
+        <span class="muted">운영자 카톡: herx</span>
+      </div>
+    </div>
+
+    <div class="footer-bottom muted">© Daina. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById("btnContact")?.addEventListener("click", (e)=>{
+    e.preventDefault();
+    alert("광고문의: 카톡 herx");
+  });
+</script>

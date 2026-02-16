@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f6f7fb" />
+  <title>Daina · 공고 상세</title>
+  <link rel="icon" type="image/png" sizes="64x64" href="./assets/images/daina.png" />
+  <link rel="apple-touch-icon" href="./assets/images/daina.png" />
+  <link rel="stylesheet" href="./assets/css/app.css" />
+  <script defer src="./assets/js/partials.js"></script>
+  <script type="module" defer src="./assets/js/main.js"></script>
+  <script type="module" defer src="./assets/js/jobDetailPage.js"></script>
+</head>
+<body>
+  <div class="page">
+    <div id="site-header"></div>
+    <main class="main">
+      <div class="container">
+
+        <div class="card pad">
+          <div class="kv">
+            <div>
+              <h1 class="h1" id="title">공고 상세</h1>
+              <div class="sub" id="sub">로딩중…</div>
+            </div>
+            <div class="actions" id="actions"></div>
+          </div>
+
+          <div class="hr"></div>
+
+          <div id="body" class="grid"></div>
+
+          <div class="hr"></div>
+
+          <div class="card" style="padding:14px; border-radius:16px;">
+            <div class="pill">지원</div>
+            <div class="sub" style="margin-top:6px;">구직 등록(프로필) 후 지원하세요. 같은 공고에는 1회만 지원됩니다.</div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+              <button class="btn primary" id="btnApply" type="button">지원하기</button>
+              <a class="btn" href="./register_jobseeker.html">구직 등록/수정</a>
+            </div>
+            <div id="applyMsg" class="sub" style="margin-top:8px;"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+    <div id="site-footer"></div>
+  </div>
+</body>
+</html>

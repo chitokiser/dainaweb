@@ -1,0 +1,170 @@
+// /firebase/firestore.rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.enabled == true;
+    }
+
+    function hasAdminInvite() {
+      return signedIn()
+        && request.auth.token.email is string
+        && exists(/databases/$(database)/documents/adminInvites/$(request.auth.token.email))
+        && get(/databases/$(database)/documents/adminInvites/$(request.auth.token.email)).data.enabled == true;
+    }
+
+
+    function isOwnerDoc() {
+      return signedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
+        match /admins/{uid} {
+      // 자신의 관리자 문서는 읽을 수 있음(권한 확인용)
+      allow read: if isAdmin() || (signedIn() && request.auth.uid == uid);
+
+      // 관리자(기존) 또는 초대받은 유저가 자신의 admins/{uid}를 생성 가능
+      allow create: if (signedIn() && request.auth.uid == uid && hasAdminInvite()
+        && request.resource.data.enabled == true
+        && request.resource.data.email == request.auth.token.email)
+        || isAdmin();
+
+      // 업데이트/삭제는 관리자만
+      allow update, delete: if isAdmin();
+    }
+
+    match /adminInvites/{email} {
+      // 본인 초대는 읽기 가능(자동 권한 부여 확인)
+      allow read: if isAdmin() || (signedIn() && request.auth.token.email == email);
+
+      // 초대 생성/수정/삭제는 관리자만
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    match /notices/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /reports/{id} {
+      allow create: if signedIn()
+        && request.resource.data.reason is string
+        && request.resource.data.reason.size() >= 2;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /users/{uid} {
+      allow read, create, update: if signedIn() && request.auth.uid == uid;
+      allow delete: if false;
+
+      match /bookmarks/{postId} {
+        allow read, create, delete: if signedIn() && request.auth.uid == uid;
+        allow update: if false;
+      }
+    }
+
+    match /posts/{postId} {
+      allow read: if resource.data.status == "approved"
+        || isAdmin()
+        || (signedIn() && resource.data.ownerUid == request.auth.uid);
+
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.status == "pending"
+        && request.resource.data.category is string
+        && request.resource.data.title is map
+        && request.resource.data.title.ko is string
+        && request.resource.data.title.ko.size() >= 2
+        && request.resource.data.desc is map
+        && request.resource.data.desc.ko is string
+        && request.resource.data.desc.ko.size() >= 5
+        && request.resource.data.area is string
+        && request.resource.data.area.size() >= 1
+        && request.resource.data.contact is string
+        && request.resource.data.contact.size() >= 2;
+
+      allow update: if isAdmin()
+        || (
+          isOwnerDoc()
+          && (
+            (
+              (resource.data.status == "pending" || resource.data.status == "rejected")
+              && request.resource.data.status == resource.data.status
+            )
+            || (
+              resource.data.status == "approved"
+              && request.resource.data.status == "pending"
+              && request.resource.data.editRequested == true
+            )
+          )
+          && request.resource.data.ownerUid == resource.data.ownerUid
+        )
+        || (
+          isOwnerDoc()
+          && resource.data.status == "approved"
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly(["progressStatus","contactPublic","updatedAt","updatedAtIso"])
+          && (request.resource.data.progressStatus == "ongoing" || request.resource.data.progressStatus == "done")
+          && (request.resource.data.progressStatus != "done" || request.resource.data.contactPublic == false)
+        )
+        || (
+          signedIn()
+          && resource.data.status == "approved"
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly(["likeCount","updatedAt","updatedAtIso","lastActivityAtMs"])
+          && request.resource.data.likeCount is int
+          && request.resource.data.likeCount >= 0
+          && (
+            request.resource.data.likeCount == resource.data.likeCount + 1
+            || request.resource.data.likeCount == resource.data.likeCount - 1
+          )
+        )
+        || (
+          signedIn()
+          && resource.data.status == "approved"
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly(["commentCount","updatedAt","updatedAtIso","lastActivityAtMs"])
+          && request.resource.data.commentCount is int
+          && request.resource.data.commentCount >= 0
+          && (
+            request.resource.data.commentCount == resource.data.commentCount + 1
+            || request.resource.data.commentCount == resource.data.commentCount - 1
+          )
+        );
+
+      allow delete: if isAdmin() || (isOwnerDoc() && resource.data.status == "pending");
+
+      match /likes/{uid} {
+        allow create, delete: if signedIn() && request.auth.uid == uid;
+        allow read, update: if false;
+      }
+
+      match /comments/{cid} {
+        allow read: if (resource.data.hidden != true)
+          || isAdmin()
+          || (signedIn() && resource.data.ownerUid == request.auth.uid);
+
+        allow create: if signedIn()
+          && request.resource.data.ownerUid == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() >= 2;
+
+        allow update: if isAdmin()
+          || (
+            signedIn()
+            && resource.data.ownerUid == request.auth.uid
+            && request.resource.data.diff(resource.data).changedKeys().hasOnly(["text","updatedAt","updatedAtIso"])
+            && request.resource.data.text is string
+            && request.resource.data.text.size() >= 2
+          );
+
+        allow delete: if isAdmin() || (signedIn() && resource.data.ownerUid == request.auth.uid);
+      }
+    }
+  }
+}
