@@ -39,10 +39,10 @@
   text-decoration:none;
   color: inherit;
 }
-.brand-logo{
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
+
+#siteHeaderRoot .brand-logo{
+  height:30px !important;
+  width:auto !important;
 }
 .brand-name{
   font-weight: 800;
