@@ -1,6 +1,6 @@
 // /public/assets/js/indexPage.js
 import { CATEGORIES } from "./config.js";
-import { listNotices, listTop10 } from "./postsApi.js";
+import { listNotices, listTop10, getPremiumPosts } from "./postsApi.js";
 import { esc, fmtDT, pickText } from "./util.js";
 
 function noticeHTML(n){
@@ -36,6 +36,57 @@ function miniCard(p){
 }
 
 let currentMode = "all";
+
+function premiumCard(p){
+  const coverRaw = p.coverUrl
+    || p.repImageUrl
+    || (Array.isArray(p.thumbs) ? p.thumbs[0] : "")
+    || (Array.isArray(p.imageUrls) ? p.imageUrls[0] : "")
+    || "";
+  const cover = esc(coverRaw);
+  const title = esc(pickText(p,"title") || "");
+  const cat = esc(p.categoryLabel || p.category || "");
+  const area = esc(p.area || "");
+  const like = Number(p.likeCount || 0);
+  return `
+    <a class="premium-card" href="./post_detail.html?id=${encodeURIComponent(p.id)}">
+      ${cover
+        ? `<img class="premium-cover" src="${cover}" alt="cover" loading="lazy" />`
+        : `<div class="premium-cover ph"></div>`}
+      <div class="premium-body">
+        <div class="premium-cat">${cat}</div>
+        <div class="premium-title">${title}</div>
+        <div class="premium-meta">${area}${area && like ? ' · ' : ''}좋아요 ${like}</div>
+      </div>
+    </a>
+  `;
+}
+
+async function renderPremium(){
+  const wrap = document.getElementById("premiumSection");
+  if(!wrap) return;
+  try{
+    const posts = await getPremiumPosts();
+    if(!posts.length){ wrap.innerHTML = ""; return; }
+    wrap.innerHTML = `
+      <section class="premium-sec">
+        <div class="premium-sec-head">
+          <h2 class="premium-sec-title">
+            <span class="premium-badge">PREMIUM</span>
+            관리자 추천
+          </h2>
+          <span class="muted" style="font-size:12px;">${posts.length}개</span>
+        </div>
+        <div class="premium-grid">
+          ${posts.map(premiumCard).join("")}
+        </div>
+      </section>
+    `;
+  }catch(e){
+    console.error("premium load failed", e);
+    wrap.innerHTML = "";
+  }
+}
 
 async function renderNotices(){
   const nBox = document.getElementById("notices");
@@ -95,6 +146,7 @@ function bindTabs(){
 }
 
 async function render(){
+  await renderPremium();
   await renderNotices();
   buildTopWrap();
   bindTabs();

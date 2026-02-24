@@ -26,6 +26,9 @@ import {
   adminDelete,
   adminUpdatePost,
   adminClosePost,
+  getPremiumPostIds,
+  setPremiumPostIds,
+  getPremiumPosts,
 } from "./postsApi.js";
 import { esc, fmtDT, toast } from "./util.js";
 
@@ -109,7 +112,7 @@ const REPORTS = REPORTS_COLLECTION || "reports";
 let _user = null;
 let _isAdmin = false;
 
-let _tab = "posts"; // posts | reports
+let _tab = "posts"; // posts | reports | premium
 let _postsCache = [];
 let _reportsCache = [];
 
@@ -151,6 +154,7 @@ function setTabsUI() {
 
   el("postsPane")?.classList.toggle("hide", _tab !== "posts");
   el("reportsPane")?.classList.toggle("hide", _tab !== "reports");
+  el("premiumPane")?.classList.toggle("hide", _tab !== "premium");
 }
 
 function fillCategorySelects() {
@@ -863,6 +867,245 @@ async function refreshReports() {
 }
 
 /* =========================
+   Premium Management
+========================= */
+
+let _premiumIds = []; // 현재 선택된 프리미엄 post ID 배열 (순서 유지)
+let _premiumPostsCache = {}; // id -> post 객체 캐시
+
+function premiumPickImg(p) {
+  return p.coverUrl || p.repImageUrl
+    || (Array.isArray(p.thumbs) && p.thumbs[0])
+    || (Array.isArray(p.imageUrls) && p.imageUrls[0])
+    || "";
+}
+
+function premiumPickTitle(p) {
+  if (typeof p.title === "object") return p.title.ko || p.title.vi || "";
+  return p.title || "";
+}
+
+function renderPremiumSelected() {
+  const list = el("premiumSelectedList");
+  const countEl = el("premiumCount");
+  if (!list) return;
+  if (countEl) countEl.textContent = _premiumIds.length;
+
+  if (!_premiumIds.length) {
+    list.innerHTML = `<div class="muted" style="padding:12px;">선택된 글이 없습니다.</div>`;
+    return;
+  }
+
+  list.innerHTML = _premiumIds.map((id, i) => {
+    const p = _premiumPostsCache[id];
+    if (!p) return `<div class="muted pad">ID: ${esc(id)} (로딩 중...)</div>`;
+    const img = premiumPickImg(p);
+    const title = esc(premiumPickTitle(p) || "(제목없음)");
+    const cat = esc(p.categoryLabel || p.category || "");
+    return `
+      <div class="premium-selected-item" data-id="${esc(id)}">
+        <div class="premium-rank">${i + 1}</div>
+        ${img ? `<img class="premium-selected-img" src="${esc(img)}" alt="" loading="lazy" />` : `<div class="premium-selected-img" style="background:#f3f4f6;border-radius:8px;"></div>`}
+        <div class="premium-selected-body">
+          <div class="premium-selected-title">${title}</div>
+          <div class="premium-selected-meta">${cat}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          ${i > 0 ? `<button class="btn small ghost" type="button" data-pact="up" data-id="${esc(id)}" title="위로">↑</button>` : `<div style="height:34px;"></div>`}
+          ${i < _premiumIds.length - 1 ? `<button class="btn small ghost" type="button" data-pact="down" data-id="${esc(id)}" title="아래로">↓</button>` : `<div style="height:34px;"></div>`}
+        </div>
+        <button class="btn small danger" type="button" data-pact="remove" data-id="${esc(id)}">해제</button>
+      </div>
+    `;
+  }).join("");
+
+  // 이벤트
+  list.querySelectorAll("[data-pact]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const act = btn.dataset.pact;
+      const id = btn.dataset.id;
+      const idx = _premiumIds.indexOf(id);
+      if (idx === -1) return;
+
+      if (act === "remove") {
+        _premiumIds.splice(idx, 1);
+      } else if (act === "up" && idx > 0) {
+        [_premiumIds[idx - 1], _premiumIds[idx]] = [_premiumIds[idx], _premiumIds[idx - 1]];
+      } else if (act === "down" && idx < _premiumIds.length - 1) {
+        [_premiumIds[idx], _premiumIds[idx + 1]] = [_premiumIds[idx + 1], _premiumIds[idx]];
+      }
+
+      renderPremiumSelected();
+      renderPremiumSearchResults(Object.values(_premiumSearchResultsCache));
+    });
+  });
+}
+
+let _premiumSearchResultsCache = {};
+
+function renderPremiumSearchResults(rows) {
+  const box = el("premiumSearchResults");
+  if (!box) return;
+  if (!rows.length) {
+    box.innerHTML = `<div class="empty">결과 없음</div>`;
+    return;
+  }
+
+  box.innerHTML = rows.map((p) => {
+    const id = esc(p.id);
+    const isSelected = _premiumIds.includes(p.id);
+    const img = premiumPickImg(p);
+    const title = esc(premiumPickTitle(p) || "(제목없음)");
+    const cat = esc(p.categoryLabel || p.category || "");
+    const area = esc(p.area || "");
+    const like = Number(p.likeCount || 0);
+    return `
+      <article class="card" style="margin:8px;cursor:default;" data-pid="${id}">
+        <div class="card-body" style="flex-direction:row;align-items:center;gap:10px;">
+          ${img ? `<img style="width:52px;height:40px;object-fit:cover;border-radius:8px;border:1px solid var(--line);flex:0 0 auto;" src="${esc(img)}" alt="" loading="lazy" />` : `<div style="width:52px;height:40px;background:#f3f4f6;border-radius:8px;flex:0 0 auto;"></div>`}
+          <div style="flex:1;min-width:0;">
+            <div class="card-title" style="font-size:13px;">${title}</div>
+            <div class="muted" style="font-size:11px;">${cat}${area ? " · " + area : ""} · 좋아요 ${like}</div>
+          </div>
+          <button class="btn small ${isSelected ? "danger" : "ok"}" type="button" data-pact="${isSelected ? "deselect" : "select"}" data-id="${id}">
+            ${isSelected ? "해제" : "추가"}
+          </button>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  box.querySelectorAll("[data-pact]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const act = btn.dataset.pact;
+      const id = btn.dataset.id;
+      const p = _premiumSearchResultsCache[id];
+
+      if (act === "select") {
+        if (_premiumIds.length >= 10) {
+          toast("최대 10개까지만 선택할 수 있습니다.");
+          return;
+        }
+        if (!_premiumIds.includes(id)) {
+          _premiumIds.push(id);
+          if (p) _premiumPostsCache[id] = p;
+        }
+      } else if (act === "deselect") {
+        const idx = _premiumIds.indexOf(id);
+        if (idx !== -1) _premiumIds.splice(idx, 1);
+      }
+
+      renderPremiumSelected();
+      renderPremiumSearchResults(Object.values(_premiumSearchResultsCache));
+    });
+  });
+}
+
+async function searchPremiumPosts() {
+  const cat = el("premiumCatFilter")?.value || "all";
+  const qtxt = (el("premiumSearch")?.value || "").trim().toLowerCase();
+  const box = el("premiumSearchResults");
+  if (box) box.innerHTML = `<div class="muted pad">검색 중...</div>`;
+
+  try {
+    let rows = [];
+    let q1;
+    if (cat === "all") {
+      q1 = query(collection(db, POSTS), where("status", "==", "approved"), orderBy("likeCount", "desc"), limit(100));
+    } else {
+      q1 = query(collection(db, POSTS), where("category", "==", cat), where("status", "==", "approved"), orderBy("likeCount", "desc"), limit(100));
+    }
+
+    let snap;
+    try {
+      snap = await getDocs(q1);
+      rows = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    } catch {
+      // fallback: status만 where 후 JS 필터
+      const q2 = query(collection(db, POSTS), where("status", "==", "approved"), limit(300));
+      snap = await getDocs(q2);
+      rows = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      if (cat !== "all") rows = rows.filter((p) => p.category === cat);
+      rows.sort((a, b) => Number(b.likeCount || 0) - Number(a.likeCount || 0));
+      rows = rows.slice(0, 100);
+    }
+
+    if (qtxt) {
+      rows = rows.filter((p) => postText(p).includes(qtxt));
+    }
+
+    _premiumSearchResultsCache = {};
+    rows.forEach((p) => { _premiumSearchResultsCache[p.id] = p; });
+
+    renderPremiumSearchResults(rows);
+  } catch (e) {
+    console.error(e);
+    if (box) box.innerHTML = `<div class="empty">검색 실패: ${esc(e?.message || e)}</div>`;
+  }
+}
+
+function fillPremiumCatFilter() {
+  const sel = el("premiumCatFilter");
+  if (!sel) return;
+  sel.innerHTML = [
+    `<option value="all">전체 카테고리</option>`,
+    ...CATEGORIES.map((c) => `<option value="${esc(c.key)}">${esc(c.label)}</option>`),
+  ].join("");
+}
+
+async function loadPremiumPane() {
+  const msg = el("premiumMsg");
+  if (msg) msg.textContent = "로딩 중...";
+  try {
+    const ids = await getPremiumPostIds();
+    _premiumIds = [...ids];
+
+    // 기존 프리미엄 게시글 캐시 로드
+    const posts = await getPremiumPosts();
+    posts.forEach((p) => { _premiumPostsCache[p.id] = p; });
+
+    renderPremiumSelected();
+    if (msg) msg.textContent = "";
+  } catch (e) {
+    if (msg) msg.textContent = `로드 실패: ${e?.message || e}`;
+  }
+}
+
+function bindPremiumUI() {
+  fillPremiumCatFilter();
+
+  el("btnPremiumSearch")?.addEventListener("click", () => searchPremiumPosts());
+  el("premiumSearch")?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") searchPremiumPosts();
+  });
+  el("premiumCatFilter")?.addEventListener("change", () => searchPremiumPosts());
+
+  el("btnClearPremium")?.addEventListener("click", () => {
+    if (!confirm("선택된 프리미엄 글을 모두 해제할까요?")) return;
+    _premiumIds = [];
+    renderPremiumSelected();
+    renderPremiumSearchResults(Object.values(_premiumSearchResultsCache));
+  });
+
+  el("btnSavePremium")?.addEventListener("click", async () => {
+    const btn = el("btnSavePremium");
+    const msg = el("premiumMsg");
+    try {
+      if (btn) btn.disabled = true;
+      if (msg) msg.textContent = "저장 중...";
+      await setPremiumPostIds(_premiumIds);
+      toast("프리미엄 저장 완료");
+      if (msg) msg.textContent = `저장 완료 (${_premiumIds.length}개)`;
+    } catch (e) {
+      toast(e?.message || "저장 실패");
+      if (msg) msg.textContent = `저장 실패: ${e?.message || e}`;
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+}
+
+/* =========================
    Admin check
 ========================= */
 async function checkAdmin(user) {
@@ -893,7 +1136,8 @@ function bindUI() {
     _tab = btn.dataset.tab || "posts";
     setTabsUI();
     if (_tab === "posts") refreshPosts();
-    else refreshReports();
+    else if (_tab === "reports") refreshReports();
+    else if (_tab === "premium") loadPremiumPane();
   });
 
   // Posts filters
@@ -955,6 +1199,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fillStatusSelect();
   setTabsUI();
   bindUI();
+  bindPremiumUI();
 
   // 초기 화면: 게이트 표시
   gateShow("로그인 및 관리자 권한이 필요합니다.");

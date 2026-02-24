@@ -1213,6 +1213,58 @@ export async function getTop10ByLikes(category, mode = "all") {
 }
 
 /* =========================
+   premium (admin curated)
+========================= */
+
+export async function getPremiumPostIds() {
+  try {
+    const ref = doc(db, "siteSettings", "premium");
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return [];
+    return snap.data()?.postIds || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function setPremiumPostIds(postIds) {
+  const ok = await isAdmin();
+  if (!ok) throw new Error("관리자 권한이 없습니다.");
+
+  const ids = (Array.isArray(postIds) ? postIds : [])
+    .map((id) => normalizeStr(id))
+    .filter(Boolean)
+    .slice(0, 10);
+
+  const ref = doc(db, "siteSettings", "premium");
+  await setDoc(ref, {
+    postIds: ids,
+    updatedAt: serverTimestamp(),
+    updatedAtIso: nowIso(),
+    updatedByUid: auth.currentUser?.uid || "",
+  });
+  return ids;
+}
+
+export async function getPremiumPosts() {
+  const ids = await getPremiumPostIds();
+  if (!ids.length) return [];
+
+  const posts = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        const snap = await getDoc(doc(db, POSTS_COLLECTION, id));
+        if (!snap.exists()) return null;
+        return { id: snap.id, ...snap.data() };
+      } catch {
+        return null;
+      }
+    })
+  );
+  return posts.filter(Boolean);
+}
+
+/* =========================
    realtime (optional)
 ========================= */
 
